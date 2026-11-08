@@ -140,6 +140,9 @@
   .addrow{display:flex;gap:8px}
   .addrow button{white-space:nowrap}
 
+  .update{display:none;align-items:center;justify-content:space-between;gap:10px;background:var(--win);color:#fff;
+    border-radius:12px;padding:10px 12px;margin:-4px 0 14px;font-size:14px;font-weight:600}
+  .update button{background:#fff;color:var(--win);padding:7px 12px;font-size:14px;font-weight:700}
   .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);opacity:0;z-index:20;
     background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;transition:.2s;pointer-events:none}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -151,6 +154,8 @@
     <h1>♠ 大老二<span>計分器</span></h1>
     <button class="ghost" id="copyBtn">複製戰績</button>
   </header>
+
+  <div class="update" id="updBar"><span>有新版本可以更新</span><button id="updNow">立即更新</button></div>
 
   <!-- 本場 -->
   <section class="card">
@@ -220,6 +225,10 @@
         <button class="ghost danger" id="newGameBtn">結束本場、開新牌局</button>
       </div>
       <p class="hint" style="margin-top:8px">本場會存進「歷史牌局」，新牌局沿用同樣四位玩家，可再點名字換人。</p>
+      <div class="btns" style="align-items:center">
+        <button class="ghost" id="checkUpd">檢查更新</button>
+        <span class="hint" style="margin:0" id="verNote"></span>
+      </div>
     </details>
   </section>
 
@@ -857,6 +866,41 @@ $("copyBtn").addEventListener("click", async () => {
   try { await navigator.clipboard.writeText(lines.join("\n")); toast("已複製，可直接貼到 LINE"); }
   catch(e){ toast("無法複製，請手動截圖"); }
 });
+
+/* ============ 檢查更新 ============ */
+// 每次發佈新版時，這裡和 version.json 的版本號要一起改
+const APP_VERSION = "2026.11.09.2";
+async function latestVersion(){
+  const r = await fetch("version.json?t=" + Date.now(), { cache: "no-store" });
+  if (!r.ok) throw new Error("http " + r.status);
+  return (await r.json()).version;
+}
+async function checkUpdate(manual){
+  try {
+    const v = await latestVersion();
+    const hasNew = v && v !== APP_VERSION;
+    $("updBar").style.display = hasNew ? "flex" : "none";
+    if (manual) toast(hasNew ? "有新版本，按上方「立即更新」" : "已經是最新版本");
+    if (hasNew && manual) window.scrollTo({ top: 0, behavior: "smooth" });
+  } catch(e){ if (manual) toast("無法連線，請確認網路後再試"); }
+}
+async function doUpdate(){
+  toast("更新中…");
+  // 先強制更新瀏覽器暫存的網頁，再重新載入（戰績存在手機裡，不受影響）
+  try { await Promise.all(["./", "index.html", "manifest.json"].map(u => fetch(u, { cache: "reload" }))); } catch(e){}
+  location.reload();
+}
+$("verNote").textContent = `目前版本 ${APP_VERSION}`;
+$("checkUpd").addEventListener("click", () => checkUpdate(true));
+$("updNow").addEventListener("click", doUpdate);
+if (location.protocol.startsWith("http")){
+  checkUpdate(false);
+  // 從背景切回 App 時也檢查一次（最多每 10 分鐘一次）
+  let lastCheck = Date.now();
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible" && Date.now() - lastCheck > 600000){ lastCheck = Date.now(); checkUpdate(false); }
+  });
+}
 
 /* ============ 啟動 ============ */
 function renderAll(){ renderTotals(); renderEntry(); renderHistory(); renderGames(); renderStats(); }

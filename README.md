@@ -10,3 +10,7 @@
 使用網址：https://marsallen.github.io/big2-scorer/
 
 在 iPhone Safari 打開上面網址 →「分享」→「加入主畫面」即可當 App 使用，資料存在手機本機。
+
+## 發佈新版
+
+改完 `index.html` 後，把檔案裡的 `APP_VERSION` 和 `version.json` 的版本號改成同一個新值，App 才會提示「有新版本」。
