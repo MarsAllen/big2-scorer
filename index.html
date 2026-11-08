@@ -15,10 +15,12 @@
   :root{
     --bg:#f5f3ee; --card:#fff; --ink:#1d1d1f; --sub:#6b6b70; --line:#e4e1da;
     --accent:#c0392b; --accent-ink:#fff; --win:#1f8a4c; --lose:#c0392b; --soft:#f0ede6;
+    --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300; --s7:#6250d6; --s8:#e34948; --s0:#9a9893;
   }
   @media (prefers-color-scheme: dark){
     :root{ --bg:#141416; --card:#1e1e21; --ink:#f2f2f2; --sub:#9a9aa0; --line:#2e2e33;
-      --accent:#e0533f; --win:#3ec47a; --lose:#ff6b5b; --soft:#26262a; }
+      --accent:#e0533f; --win:#3ec47a; --lose:#ff6b5b; --soft:#26262a;
+      --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767; --s0:#77767a; }
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--ink);
@@ -30,33 +32,41 @@
   h1 span{color:var(--accent)}
   h2{font-size:15px;margin:0 0 10px;color:var(--sub);font-weight:600}
   .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:14px}
-  button{font:inherit;cursor:pointer;border:none;border-radius:10px}
+  button{font:inherit;cursor:pointer;border:none;border-radius:10px;color:var(--ink)}
   .ghost{background:var(--soft);color:var(--ink);padding:8px 12px;font-size:14px}
   .ghost.danger{color:var(--lose)}
+  .ghost:disabled{opacity:.4}
   .primary{background:var(--accent);color:var(--accent-ink);width:100%;padding:14px;font-size:17px;font-weight:700}
   .primary:disabled{opacity:.4;cursor:not-allowed}
-  input{font:inherit;color:var(--ink);background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+  input,select{font:inherit;color:var(--ink);background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:-1px}
   textarea{font:13px/1.4 ui-monospace,Menlo,monospace;color:var(--ink);background:var(--soft);border:1px solid var(--line);
     border-radius:8px;padding:8px 10px;width:100%;margin-top:8px;resize:vertical;word-break:break-all}
+  .pos{color:var(--win)} .neg{color:var(--lose)} .zero{color:var(--sub)}
+  .hint{font-size:13px;color:var(--sub);margin:4px 0 12px;line-height:1.5}
+  .err{font-size:13px;color:var(--lose);min-height:18px;margin:8px 0 6px;line-height:1.5}
   .ok{color:var(--win)!important}
-  .sync{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.45;color:var(--sub);
-    background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin:-4px 0 14px}
-  .sync.warn{color:var(--lose);border-color:var(--lose)}
-  .sync.good{color:var(--win)}
-  input:focus{outline:2px solid var(--accent);outline-offset:-1px}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  label{font-size:12px;color:var(--sub);display:block;margin-bottom:4px}
+  details summary{cursor:pointer;font-size:15px;color:var(--sub);font-weight:600;list-style:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"▸ ";}
+  details[open] summary::before{content:"▾ ";}
+  .dot{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle;margin-right:5px;flex:none}
 
-  /* totals */
+  /* 本場座位與總計 */
   .totals{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-  .tot{background:var(--soft);border-radius:12px;padding:10px 6px;text-align:center;position:relative}
-  .tot .nm{font-size:13px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tot{background:var(--soft);border-radius:12px;padding:10px 6px;text-align:center;position:relative;width:100%}
+  .tot .nm{font-size:13px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+  .tot .nm small{color:var(--sub);font-weight:400}
   .tot .pt{font-size:24px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
   .tot .mn{font-size:13px;margin-top:2px;font-variant-numeric:tabular-nums}
+  .tot.empty{border:1.5px dashed var(--line);background:none;color:var(--sub);font-size:13px;padding:22px 6px}
   .tot.lead{outline:2px solid var(--win)}
   .tot.lead::after{content:"👑";position:absolute;top:-10px;right:-4px;font-size:16px}
-  .pos{color:var(--win)} .neg{color:var(--lose)} .zero{color:var(--sub)}
   .meta{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:13px;color:var(--sub)}
 
-  /* entry */
+  /* 輸入 */
   .row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
   .row:first-of-type{border-top:none}
   .pname{font-size:16px;font-weight:600}
@@ -66,14 +76,12 @@
   .step{display:flex;align-items:center;gap:6px}
   .step button{width:40px;height:40px;background:var(--soft);color:var(--ink);font-size:20px;font-weight:700}
   .step input{width:64px;text-align:center;font-size:18px;font-weight:700;padding:6px 4px}
-  .winnote{font-size:14px;color:var(--win);font-weight:700;padding:0 6px;min-width:142px;text-align:right}
-  .hint{font-size:13px;color:var(--sub);margin:4px 0 12px}
-  .err{font-size:13px;color:var(--lose);min-height:18px;margin:8px 0 6px}
+  .winnote{font-size:14px;color:var(--win);font-weight:700;padding:0 6px;min-width:150px;text-align:right}
   .editbar{display:none;justify-content:space-between;align-items:center;background:var(--soft);
     border-radius:10px;padding:8px 10px;margin-bottom:10px;font-size:14px}
   .editing .editbar{display:flex}
 
-  /* history */
+  /* 明細表 */
   table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:14px}
   th,td{padding:8px 4px;text-align:center;border-bottom:1px solid var(--line)}
   th{color:var(--sub);font-weight:600;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:70px}
@@ -83,15 +91,56 @@
   .act button{background:none;color:var(--sub);padding:4px 6px;font-size:13px}
   .empty{color:var(--sub);font-size:14px;text-align:center;padding:14px 0}
 
-  /* settings */
-  details summary{cursor:pointer;font-size:15px;color:var(--sub);font-weight:600;list-style:none}
-  details summary::-webkit-details-marker{display:none}
-  details summary::before{content:"▸ ";}
-  details[open] summary::before{content:"▾ ";}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
-  label{font-size:12px;color:var(--sub);display:block;margin-bottom:4px}
-  .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);opacity:0;
+  /* 統計 */
+  .seg{display:flex;background:var(--soft);border-radius:10px;padding:3px;margin:12px 0 8px}
+  .seg button{flex:1;background:none;padding:8px 4px;font-size:14px;color:var(--sub);border-radius:8px}
+  .seg button.on{background:var(--card);color:var(--ink);font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  .seg button:disabled{opacity:.35}
+  .legend{display:flex;flex-wrap:wrap;gap:6px 12px;margin:10px 0 6px;font-size:13px}
+  .legend span{display:flex;align-items:center;white-space:nowrap}
+  .legend b{font-variant-numeric:tabular-nums;margin-left:4px;font-weight:600}
+  .chartwrap{position:relative;touch-action:pan-y}
+  .chartwrap svg{display:block;width:100%;overflow:visible}
+  .tip{position:absolute;top:0;pointer-events:none;background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:8px 10px;font-size:12px;box-shadow:0 4px 14px rgba(0,0,0,.12);display:none;min-width:130px;z-index:2}
+  .tip .t{color:var(--sub);margin-bottom:4px}
+  .tip div.l{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:1px 0;font-variant-numeric:tabular-nums}
+  .tip div.l span:first-child{display:flex;align-items:center}
+  .chartnote{font-size:12px;color:var(--sub);margin:6px 0 0}
+  .tblwrap{overflow-x:auto;margin-top:14px;-webkit-overflow-scrolling:touch}
+  .stat{min-width:100%;width:max-content;font-size:13px}
+  .stat th,.stat td{padding:7px 8px;white-space:nowrap;max-width:none}
+  .stat th:first-child,.stat td:first-child{position:sticky;left:0;background:var(--card);text-align:left;z-index:1}
+  .stat td:first-child{font-weight:600}
+
+  /* 歷史牌局 */
+  .game{border-top:1px solid var(--line);padding:10px 0}
+  .game:first-child{border-top:none}
+  .game .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .game .when{font-weight:600;font-size:14px}
+  .game .sum{font-size:13px;color:var(--sub);margin-top:4px;line-height:1.5}
+  .game .gb{display:flex;gap:4px}
+  .game .gb button{background:var(--soft);padding:5px 9px;font-size:13px}
+
+  /* 玩家名單 */
+  .person{display:flex;align-items:center;gap:8px;padding:6px 0}
+  .person input{flex:1}
+  .person .cnt{font-size:12px;color:var(--sub);white-space:nowrap;min-width:52px;text-align:right}
+  .person button{background:none;color:var(--lose);font-size:13px;padding:4px 6px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+  /* 選人面板 */
+  .sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:flex-end;justify-content:center;z-index:10}
+  .sheet-bg.show{display:flex}
+  .sheet{background:var(--card);width:100%;max-width:560px;border-radius:18px 18px 0 0;padding:16px 14px 26px;max-height:80vh;overflow:auto}
+  .sheet h3{margin:0 0 4px;font-size:17px}
+  .plist{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+  .plist button{background:var(--soft);padding:10px 14px;font-size:15px}
+  .plist button.cur{outline:2px solid var(--win)}
+  .addrow{display:flex;gap:8px}
+  .addrow button{white-space:nowrap}
+
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);opacity:0;z-index:20;
     background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;transition:.2s;pointer-events:none}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
@@ -102,400 +151,716 @@
     <h1>♠ 大老二<span>計分器</span></h1>
     <button class="ghost" id="copyBtn">複製戰績</button>
   </header>
-  <div class="sync" id="syncStatus" style="display:none"></div>
 
-  <!-- 總分 -->
+  <!-- 本場 -->
   <section class="card">
-    <h2>目前總計</h2>
+    <h2>本場總計 <span style="font-weight:400">· 點名字可換人</span></h2>
     <div class="totals" id="totals"></div>
-    <div class="meta"><span id="roundCount">尚未開始</span><span id="priceNote"></span></div>
+    <div class="meta"><span id="roundCount"></span><span id="priceNote"></span></div>
   </section>
 
   <!-- 輸入 -->
   <section class="card" id="entryCard">
-    <div class="editbar"><span id="editLabel">正在修改</span><button class="ghost" id="cancelEdit">取消</button></div>
+    <div class="editbar"><span id="editLabel"></span><button class="ghost" id="cancelEdit">取消</button></div>
     <h2 id="entryTitle">第 1 局</h2>
-    <p class="hint">先點選贏家，再輸入其他三家要扣的張數（加倍請自行算好再填）。</p>
+    <p class="hint" id="entryHint">先點選贏家，再輸入其他三家要扣的張數（加倍請自行算好再填）。</p>
     <div id="entry"></div>
     <div class="err" id="err"></div>
     <button class="primary" id="submit" disabled>記錄這局</button>
   </section>
 
-  <!-- 歷史 -->
+  <!-- 本場明細 -->
   <section class="card">
-    <h2>每局明細（張數）</h2>
+    <h2>本場每局明細（張數）</h2>
     <div id="history"></div>
+  </section>
+
+  <!-- 統計 -->
+  <section class="card" id="statsCard">
+    <details id="statsBox">
+      <summary>統計圖表</summary>
+      <div class="seg" id="scopeSeg">
+        <button data-scope="cur">本場</button>
+        <button data-scope="all">全部</button>
+        <button data-scope="game">單一場</button>
+      </div>
+      <select id="gameSel" style="display:none"></select>
+      <div class="legend" id="legend"></div>
+      <div class="chartwrap" id="chartWrap"><div id="chart"></div><div class="tip" id="tip"></div></div>
+      <p class="chartnote" id="chartNote"></p>
+      <div class="tblwrap" id="statTable"></div>
+    </details>
+  </section>
+
+  <!-- 歷史牌局 -->
+  <section class="card">
+    <details id="gamesBox">
+      <summary id="gamesSum">歷史牌局</summary>
+      <div id="games" style="margin-top:10px"></div>
+    </details>
+  </section>
+
+  <!-- 玩家名單與設定 -->
+  <section class="card">
+    <details id="settings">
+      <summary>玩家名單與設定</summary>
+      <p class="hint" style="margin-top:12px">改名字會連同所有歷史一起更新。同一個人建了兩次，可以用下方「合併玩家」併成一人。</p>
+      <div id="people"></div>
+      <div style="margin-top:16px">
+        <label>合併玩家（左邊的紀錄併入右邊，左邊會被移除）</label>
+        <div class="grid2"><select id="mergeFrom"></select><select id="mergeTo"></select></div>
+        <div class="err" id="mergeMsg"></div>
+        <button class="ghost" id="mergeBtn">合併</button>
+      </div>
+      <div style="margin-top:16px">
+        <label for="price">每張金額（元，0 表示不換算；只影響本場與之後的牌局）</label>
+        <input id="price" type="number" inputmode="decimal" min="0" step="1">
+      </div>
+      <div class="btns">
+        <button class="ghost danger" id="newGameBtn">結束本場、開新牌局</button>
+      </div>
+      <p class="hint" style="margin-top:8px">本場會存進「歷史牌局」，新牌局沿用同樣四位玩家，可再點名字換人。</p>
+    </details>
   </section>
 
   <!-- 匯出匯入 -->
   <section class="card">
     <details id="transfer">
-      <summary>匯出／匯入戰績（換手機、換人記錄）</summary>
-      <p class="hint" style="margin-top:12px">匯出：複製下面這串戰績碼，用 LINE 傳給接手的人（或傳給自己）。<br>匯入：在新的瀏覽器打開這個網頁，把戰績碼貼進來就能接著記。</p>
+      <summary>匯出／匯入（換手機、換人記錄）</summary>
+      <p class="hint" style="margin-top:12px"><b>換人接手記本場：</b>複製戰績碼用 LINE 傳過去，對方貼上匯入。<br><b>換手機或備份全部：</b>匯出備份檔（含玩家名單與所有歷史牌局），在新手機選檔匯入。</p>
       <div class="btns" style="margin-top:4px">
-        <button class="ghost" id="exportBtn">匯出並複製戰績碼</button>
+        <button class="ghost" id="exportCurBtn">複製本場戰績碼</button>
+        <button class="ghost" id="exportAllBtn">匯出全部備份檔</button>
       </div>
       <textarea id="exportBox" readonly rows="3" style="display:none" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
-      <label for="importBox" style="margin-top:14px">貼上戰績碼匯入</label>
+      <label for="importBox" style="margin-top:16px">貼上戰績碼匯入（取代本場）</label>
       <textarea id="importBox" rows="3" placeholder="BIG2-…" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false"></textarea>
+      <div class="btns" style="margin-top:8px">
+        <button class="ghost" id="importBtn">匯入戰績碼</button>
+        <label class="ghost" style="margin:0;color:var(--ink);font-size:14px;cursor:pointer">選擇備份檔匯入<input type="file" id="importFile" accept=".json,application/json" style="display:none"></label>
+      </div>
       <div class="err" id="importMsg"></div>
-      <button class="ghost" id="importBtn">匯入</button>
-    </details>
-  </section>
-
-  <!-- 設定 -->
-  <section class="card">
-    <details id="settings">
-      <summary>玩家名稱與金額設定</summary>
-      <div class="grid2" id="nameInputs"></div>
-      <div style="margin-top:10px">
-        <label for="price">每張金額（元，0 表示不換算）</label>
-        <input id="price" type="number" inputmode="decimal" min="0" step="1">
-      </div>
-      <div class="btns">
-        <button class="ghost danger" id="resetBtn">開新牌局（清空所有局數）</button>
-      </div>
+      <button class="ghost" id="importConfirm" style="display:none">確認匯入</button>
     </details>
   </section>
 </main>
+
+<div class="sheet-bg" id="sheetBg"><div class="sheet" id="sheet"></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
-const KEY = "big2-scorer-v1";
-let state = { players:["玩家 A","玩家 B","玩家 C","玩家 D"], price:10, rounds:[] };
-let draft = { winner:null, cards:[0,0,0,0] };
-let editIndex = null;      // 正在修改第幾局（index）
-let pendingConfirm = null; // 二次確認用
+/* ============ 資料 ============ */
+const KEY = "big2-scorer-v2", OLD_KEY = "big2-scorer-v1";
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const newGame = seats => ({ id: uid(), startedAt: Date.now(), seats: seats ? [...seats] : [null,null,null,null], rounds: [] });
+const blankDb = () => ({ v: 2, people: [], price: 10, current: newGame(), games: [] });
 
-try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && Array.isArray(s.rounds)) state = Object.assign(state, s); } catch(e){}
-function saveLocal(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} }
-function save(){ state.updatedAt = Date.now(); saveLocal(); pushCloud(); }
+function addPerson(d, name){
+  name = String(name || "").trim().slice(0, 10);
+  const p = { id: uid(), name: name || "玩家" }; d.people.push(p); return p.id;
+}
+// 舊版（v1）資料 → v2
+function fromV1(o){
+  const d = blankDb();
+  d.price = Number(o.price) >= 0 ? Number(o.price) : 10;
+  const names = (o.players || []).slice(0, 4);
+  d.current.seats = [0,1,2,3].map(i => addPerson(d, names[i] || `玩家 ${"ABCD"[i]}`));
+  d.current.rounds = (o.rounds || []).map(r => ({ w: r.winner, c: r.cards.map(Number), m: {} }));
+  return d;
+}
+function validDb(d){
+  if (!d || d.v !== 2 || !Array.isArray(d.people) || !d.current || !Array.isArray(d.games)) return false;
+  const ids = new Set(d.people.map(p => p.id));
+  const okGame = g => Array.isArray(g.seats) && g.seats.length === 4 && g.seats.every(s => s === null || ids.has(s)) &&
+    Array.isArray(g.rounds) && g.rounds.every(r => [0,1,2,3].includes(r.w) && Array.isArray(r.c) && r.c.length === 4 &&
+      r.c.every((n,i) => i === r.w || (Number.isInteger(n) && n >= 1)));
+  return okGame(d.current) && d.games.every(g => okGame(g) && g.seats.every(s => s));
+}
+function load(){
+  try { const d = JSON.parse(localStorage.getItem(KEY)); if (validDb(d)) return d; } catch(e){}
+  try { const o = JSON.parse(localStorage.getItem(OLD_KEY)); if (o && Array.isArray(o.rounds)) { const d = fromV1(o); localStorage.setItem(KEY, JSON.stringify(d)); return d; } } catch(e){}
+  return blankDb();
+}
+let db = load();
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(db)); } catch(e){ toast("⚠️ 無法儲存，請先匯出備份"); } }
+try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch(e){}
 
-// —— 雲端儲存（存在使用者自己的 claude.ai 帳號，只有本人看得到）——
-const cloud = { ref:null, tried:false, status:"init", writing:false, dirty:false, retry:null };
-const STATUS = {
-  init:  ["", "⏳", "檢查雲端儲存中…"],
-  ok:    ["good", "☁️", "已自動存到你的 claude.ai 帳號，關掉、換裝置都不會遺失"],
-  saving:["good", "☁️", "儲存中…"],
-  err:   ["warn", "⚠️", "雲端暫時連不上，先存在這個瀏覽器，連上後會自動補存"],
-  local: ["warn", "⚠️", "目前只存在這個瀏覽器，關掉可能會遺失。請在這個頁面登入 claude.ai，或用下方戰績碼備份"]
-};
-function setStatus(s){
-  cloud.status = s; const [c, icon, text] = STATUS[s], el = $("syncStatus");
-  el.className = "sync " + c; el.innerHTML = `<span>${icon}</span><span>${text}</span>`;
-}
-function pushCloud(){
-  if (!cloud.ref) return;
-  cloud.dirty = true; clearTimeout(cloud.timer); cloud.timer = setTimeout(flush, 400);
-}
-async function flush(){
-  if (!cloud.ref || cloud.writing || !cloud.dirty) return;
-  cloud.writing = true; cloud.dirty = false; setStatus("saving");
-  try {
-    await cloud.ref.set({ code: encodeState(), updatedAt: state.updatedAt || 0 });
-    setStatus("ok");
-  } catch(e){
-    const code = e && e.code;
-    if (["invalid_argument","not_granted","revoked","capability_disabled","capability_removed"].includes(code)){
-      cloud.ref = null; setStatus("local");
-    } else {
-      cloud.dirty = true; setStatus("err");
-      clearTimeout(cloud.retry); cloud.retry = setTimeout(()=>{ cloud.retry=null; flush(); }, 4000 + Math.random()*2000);
-    }
-  } finally {
-    cloud.writing = false;
-    if (cloud.dirty && cloud.ref && !cloud.retry) flush();
-  }
-}
-function adopt(remote){
-  state = Object.assign({ players:state.players, price:state.price, rounds:[] }, remote);
-  saveLocal(); pendingConfirm = null;
-  if (editIndex !== null && editIndex >= state.rounds.length) resetDraft();
-  if (!document.activeElement || !document.activeElement.dataset || document.activeElement.dataset.name === undefined && document.activeElement.id !== "price") renderSettings();
-  renderAll();
-}
-async function initCloud(){
-  const timeout = setTimeout(()=>{ if (cloud.status === "init") setStatus(cloud.tried ? "err" : "local"); }, 10000);
-  try {
-    if (!window.claude || typeof window.claude.use !== "function"){ clearTimeout(timeout); setStatus("local"); return; }
-    const [user, db] = await Promise.all([window.claude.use("user"), window.claude.use("db")]);
-    if (!user || !db){ clearTimeout(timeout); setStatus("local"); return; }
-    const id = await user.id();
-    if (!id){ clearTimeout(timeout); setStatus("local"); return; }
-    cloud.tried = true;
-    const ref = db.doc("data/users/" + id + "/big2");
-    let confirmed = false;
-    ref.onSnapshot(snap=>{
-      if (snap.metadata.fromCache && !confirmed) return;           // 等雲端正式回應
-      let remote = null;
-      if (snap.exists){ try { remote = decodeState(snap.data().code || ""); } catch(e){} }
-      if (!confirmed){
-        confirmed = true; clearTimeout(timeout); cloud.ref = ref;
-        if (remote && (remote.updatedAt||0) >= (state.updatedAt||0)) { adopt(remote); setStatus("ok"); }
-        else if (state.rounds.length || state.updatedAt) { cloud.dirty = true; flush(); }
-        else setStatus("ok");
-        return;
-      }
-      // 其他裝置更新了 → 同步過來
-      if (remote && !snap.metadata.hasPendingWrites && (remote.updatedAt||0) > (state.updatedAt||0)) adopt(remote);
-    }, ()=>{ clearTimeout(timeout); cloud.ref = null; setStatus("local"); });
-  } catch(e){ clearTimeout(timeout); setStatus("local"); }
-}
+const person = id => db.people.find(p => p.id === id);
+const nameOf = id => (person(id) || {}).name || "（未選）";
+const colorOf = id => { const i = db.people.findIndex(p => p.id === id); return i >= 0 && i < 8 ? `var(--s${i+1})` : "var(--s0)"; };
+const cur = () => db.current;
+const seatsReady = () => cur().seats.every(Boolean) && new Set(cur().seats).size === 4;
 
-const $ = id => document.getElementById(id);
-const fmt = n => (n > 0 ? "+" : "") + n;
-const cls = n => n > 0 ? "pos" : n < 0 ? "neg" : "zero";
-const money = n => {
-  const v = Math.round(n * state.price * 100) / 100;
-  return (v > 0 ? "+" : v < 0 ? "−" : "") + "$" + Math.abs(v).toLocaleString();
-};
-const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-
-// 一局的輸贏：輸家扣剩餘張數，贏家拿三家總和
+// 一局的輸贏（依座位）：輸家扣張數，贏家拿三家總和
 function deltas(r){
   const d = [0,0,0,0]; let sum = 0;
-  for (let i=0;i<4;i++) if (i !== r.winner){ d[i] = -r.cards[i]; sum += r.cards[i]; }
-  d[r.winner] = sum; return d;
+  for (let i = 0; i < 4; i++) if (i !== r.w){ d[i] = -r.c[i]; sum += r.c[i]; }
+  d[r.w] = sum; return d;
 }
-function totals(){
-  const t = [0,0,0,0];
-  state.rounds.forEach(r => deltas(r).forEach((v,i)=> t[i]+=v));
-  return t;
+const gameTotals = g => { const t = [0,0,0,0]; g.rounds.forEach(r => deltas(r).forEach((v,i) => t[i] += v)); return t; };
+
+/* ============ 共用 ============ */
+const $ = id => document.getElementById(id);
+const fmt = n => (n > 0 ? "+" : n < 0 ? "−" : "") + Math.abs(n);
+const fmt1 = n => (n > 0 ? "+" : n < 0 ? "−" : "") + (Math.round(Math.abs(n) * 10) / 10);
+const cls = n => n > 0 ? "pos" : n < 0 ? "neg" : "zero";
+const money = (n, price) => { const v = Math.round(n * price * 100) / 100; return (v > 0 ? "+" : v < 0 ? "−" : "") + "$" + Math.abs(v).toLocaleString(); };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const dateStr = t => { const d = new Date(t); return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`; };
+const shortDate = t => { const d = new Date(t); return `${d.getMonth()+1}/${d.getDate()}`; };
+function toast(t){ const el = $("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove("show"), 1800); }
+// 二次確認：同一個按鈕 3 秒內再按一次才執行
+function confirmTap(btn, text, action){
+  if (btn._armed){ clearTimeout(btn._armed); btn._armed = null; btn.textContent = btn._orig; action(); return; }
+  btn._orig = btn.textContent; btn.textContent = text;
+  btn._armed = setTimeout(() => { btn._armed = null; btn.textContent = btn._orig; }, 3000);
 }
 
+/* ============ 本場：總計 ============ */
 function renderTotals(){
-  const t = totals(), max = Math.max(...t), has = state.rounds.length > 0;
-  $("totals").innerHTML = t.map((v,i)=>`
-    <div class="tot ${has && v===max && max>0 ? "lead":""}">
-      <div class="nm">${esc(state.players[i])}</div>
-      <div class="pt ${cls(v)}">${fmt(v)}</div>
-      ${state.price>0 ? `<div class="mn ${cls(v)}">${money(v)}</div>` : ""}
-    </div>`).join("");
-  $("roundCount").textContent = has ? `已打 ${state.rounds.length} 局` : "尚未開始";
-  $("priceNote").textContent = state.price>0 ? `每張 $${state.price}` : "不換算金額";
+  const g = cur(), t = gameTotals(g), has = g.rounds.length > 0, max = Math.max(...t);
+  $("totals").innerHTML = g.seats.map((id, i) => id
+    ? `<button class="tot ${has && t[i] === max && max > 0 ? "lead" : ""}" data-seat="${i}">
+        <div class="nm">${esc(nameOf(id))}</div>
+        <div class="pt ${cls(t[i])}">${fmt(t[i])}</div>
+        ${db.price > 0 ? `<div class="mn ${cls(t[i])}">${money(t[i], db.price)}</div>` : ""}
+      </button>`
+    : `<button class="tot empty" data-seat="${i}">＋<br>選玩家</button>`).join("");
+  $("roundCount").textContent = has ? `已打 ${g.rounds.length} 局 · ${dateStr(g.startedAt)} 開始` : "尚未開始";
+  $("priceNote").textContent = db.price > 0 ? `每張 $${db.price}` : "不換算金額";
 }
+$("totals").addEventListener("click", e => { const b = e.target.closest("[data-seat]"); if (b) openPicker(+b.dataset.seat); });
+
+/* ============ 選人面板 ============ */
+function closeSheet(){ $("sheetBg").classList.remove("show"); }
+$("sheetBg").addEventListener("click", e => { if (e.target === $("sheetBg")) closeSheet(); });
+function openPicker(seat, pendingId){
+  const g = cur(), here = g.seats[seat];
+  const others = new Set(g.seats.filter((s, i) => s && i !== seat));
+  const list = db.people.filter(p => !others.has(p.id));
+  let html;
+  if (pendingId){
+    html = `<h3>確定換人？</h3>
+      <p class="hint">本場已記 ${g.rounds.length} 局，這個位置（原本是 ${esc(nameOf(here))}）的所有局數會改算給 <b>${esc(nameOf(pendingId))}</b>。</p>
+      <div class="btns"><button class="primary" id="pkYes" style="flex:1">確定換成 ${esc(nameOf(pendingId))}</button></div>
+      <div class="btns"><button class="ghost" id="pkNo" style="flex:1">取消</button></div>`;
+  } else {
+    html = `<h3>第 ${seat+1} 位玩家</h3>
+      <p class="hint" style="margin-bottom:0">從名單點選，或新增一位。</p>
+      <div class="plist">${list.length ? list.map(p => `<button data-pick="${p.id}" class="${p.id === here ? "cur" : ""}"><span class="dot" style="background:${colorOf(p.id)}"></span>${esc(p.name)}</button>`).join("") : `<span class="hint">名單還是空的</span>`}</div>
+      <div class="addrow"><input id="pkName" maxlength="10" placeholder="新玩家名字"><button class="ghost" id="pkAdd">＋新增</button></div>
+      <div class="err" id="pkErr"></div>`;
+  }
+  $("sheet").innerHTML = html;
+  $("sheetBg").classList.add("show");
+  const choose = id => {
+    if (id === here){ closeSheet(); return; }
+    if (here && g.rounds.length){ openPicker(seat, id); return; }
+    g.seats[seat] = id; save(); closeSheet(); renderAll();
+  };
+  if (pendingId){
+    $("pkYes").onclick = () => { g.seats[seat] = pendingId; save(); closeSheet(); renderAll(); toast("已換人"); };
+    $("pkNo").onclick = closeSheet;
+    return;
+  }
+  $("sheet").querySelectorAll("[data-pick]").forEach(b => b.onclick = () => choose(b.dataset.pick));
+  const add = () => {
+    const n = $("pkName").value.trim();
+    if (!n){ $("pkErr").textContent = "請輸入名字"; return; }
+    const dup = db.people.find(p => p.name === n);
+    if (dup){
+      if (others.has(dup.id)){ $("pkErr").textContent = `${n} 已經坐在別的位置`; return; }
+      choose(dup.id); return;
+    }
+    const id = addPerson(db, n); save(); renderSettings(); choose(id);
+  };
+  $("pkAdd").onclick = add;
+  $("pkName").addEventListener("keydown", e => { if (e.key === "Enter") add(); });
+}
+
+/* ============ 本場：輸入 ============ */
+let draft = { w: null, c: [0,0,0,0] };
+let editIndex = null;
+const resetDraft = () => { draft = { w: null, c: [0,0,0,0] }; editIndex = null; };
 
 function renderEntry(){
-  const w = draft.winner;
-  let sum = 0;
-  for (let i=0;i<4;i++) if (i!==w) sum += draft.cards[i]||0;
-  $("entry").innerHTML = state.players.map((p,i)=>{
-    const isW = i===w;
-    return `<div class="row ${isW?"winner":""}">
-      <div><span class="pname">${esc(p)}</span><button class="wbtn" data-win="${i}">${isW?"✓ 贏":"設為贏家"}</button></div>
-      ${isW
-        ? `<div class="winnote">+${sum} 張</div>`
-        : `<div class="step">
-             <button data-dec="${i}" aria-label="減一">−</button>
-             <input type="number" inputmode="numeric" min="1" data-in="${i}" value="${draft.cards[i]||""}" placeholder="—">
-             <button data-inc="${i}" aria-label="加一">＋</button>
-           </div>`}
+  const g = cur(), w = draft.w;
+  const card = $("entryCard");
+  card.classList.toggle("editing", editIndex !== null);
+  $("editLabel").textContent = editIndex !== null ? `正在修改第 ${editIndex+1} 局` : "";
+  $("entryTitle").textContent = editIndex !== null ? `修改第 ${editIndex+1} 局` : `第 ${g.rounds.length+1} 局`;
+  $("submit").textContent = editIndex !== null ? "更新這局" : "記錄這局";
+  if (!seatsReady()){
+    $("entryHint").textContent = "先在上方點「選玩家」，把四個位置都選好。";
+    $("entry").innerHTML = ""; $("err").textContent = ""; $("submit").disabled = true; return;
+  }
+  $("entryHint").textContent = "先點選贏家，再輸入其他三家要扣的張數（加倍請自行算好再填）。";
+  let sum = 0; for (let i = 0; i < 4; i++) if (i !== w) sum += draft.c[i] || 0;
+  $("entry").innerHTML = g.seats.map((id, i) => {
+    const isW = i === w;
+    return `<div class="row ${isW ? "winner" : ""}">
+      <div><span class="pname">${esc(nameOf(id))}</span><button class="wbtn" data-win="${i}">${isW ? "✓ 贏" : "設為贏家"}</button></div>
+      ${isW ? `<div class="winnote">+${sum} 張</div>`
+            : `<div class="step"><button data-dec="${i}" aria-label="減一">−</button>
+               <input type="number" inputmode="numeric" min="1" data-in="${i}" value="${draft.c[i] || ""}" placeholder="—">
+               <button data-inc="${i}" aria-label="加一">＋</button></div>`}
     </div>`;
   }).join("");
   validate();
 }
-
 function validate(){
-  let msg = "";
-  if (draft.winner===null) msg = "";
-  else {
-    for (let i=0;i<4;i++){
-      if (i===draft.winner) continue;
-      const n = draft.cards[i];
-      if (!n) { msg = ""; $("submit").disabled = true; $("err").textContent = ""; return; }
-      if (n<1 || !Number.isInteger(n)) msg = `${state.players[i]} 的張數需為正整數`;
-    }
+  let msg = "", ready = draft.w !== null;
+  if (ready) for (let i = 0; i < 4; i++){
+    if (i === draft.w) continue;
+    const n = draft.c[i];
+    if (!n){ ready = false; continue; }
+    if (n < 1 || !Number.isInteger(n)) msg = `${nameOf(cur().seats[i])} 的張數需為正整數`;
   }
   $("err").textContent = msg;
-  $("submit").disabled = draft.winner===null || !!msg;
+  $("submit").disabled = !ready || !!msg;
 }
+$("entry").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.win !== undefined){ draft.w = +b.dataset.win; draft.c[draft.w] = 0; renderEntry(); }
+  else if (b.dataset.inc !== undefined){ const i = +b.dataset.inc; draft.c[i] = (draft.c[i] || 0) + 1; renderEntry(); }
+  else if (b.dataset.dec !== undefined){ const i = +b.dataset.dec; draft.c[i] = Math.max(1, (draft.c[i] || 1) - 1); renderEntry(); }
+});
+$("entry").addEventListener("input", e => {
+  const i = e.target.dataset.in; if (i === undefined) return;
+  const v = e.target.value.trim(); draft.c[+i] = v === "" ? 0 : Number(v);
+  let sum = 0; for (let k = 0; k < 4; k++) if (k !== draft.w) sum += draft.c[k] || 0;
+  const wn = document.querySelector(".winnote"); if (wn) wn.textContent = `+${sum} 張`;
+  validate();
+});
+$("submit").addEventListener("click", () => {
+  if ($("submit").disabled) return;
+  const r = { w: draft.w, c: draft.c.map((n, i) => i === draft.w ? 0 : n), m: {} };
+  const g = cur();
+  if (editIndex !== null){ r.m = g.rounds[editIndex].m || {}; g.rounds[editIndex] = r; toast(`第 ${editIndex+1} 局已更新`); }
+  else { g.rounds.push(r); toast(`第 ${g.rounds.length} 局已記錄`); }
+  save(); resetDraft(); renderAll();
+});
+$("cancelEdit").addEventListener("click", () => { resetDraft(); renderAll(); });
 
+/* ============ 本場：明細 ============ */
 function renderHistory(){
-  if (!state.rounds.length){ $("history").innerHTML = `<div class="empty">還沒有紀錄</div>`; return; }
-  const head = `<tr><th>局</th>${state.players.map(p=>`<th>${esc(p)}</th>`).join("")}<th></th></tr>`;
-  const rows = state.rounds.map((r,k)=>({r,k})).reverse().map(({r,k})=>{
+  const g = cur();
+  if (!g.rounds.length){ $("history").innerHTML = `<div class="empty">還沒有紀錄</div>`; return; }
+  const head = `<tr><th>局</th>${g.seats.map(id => `<th>${esc(nameOf(id))}</th>`).join("")}<th></th></tr>`;
+  const rows = g.rounds.map((r, k) => ({ r, k })).reverse().map(({ r, k }) => {
     const d = deltas(r);
-    const isPend = pendingConfirm && pendingConfirm.type==="del" && pendingConfirm.k===k;
-    return `<tr class="${editIndex===k?"sel":""}"><td class="r">${k+1}</td>
-      ${d.map((v,i)=>`<td class="${cls(v)} ${i===r.winner?"w":""}">${fmt(v)}</td>`).join("")}
-      <td class="act"><button data-edit="${k}">改</button><button data-del="${k}" style="${isPend?"color:var(--lose);font-weight:700":""}">${isPend?"確定刪?":"刪"}</button></td></tr>`;
+    return `<tr class="${editIndex === k ? "sel" : ""}"><td class="r">${k+1}</td>
+      ${d.map((v, i) => `<td class="${cls(v)} ${i === r.w ? "w" : ""}">${fmt(v)}</td>`).join("")}
+      <td class="act"><button data-edit="${k}">改</button><button data-del="${k}">刪</button></td></tr>`;
   }).join("");
   $("history").innerHTML = `<table>${head}${rows}</table>`;
 }
+$("history").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.edit !== undefined){
+    const k = +b.dataset.edit, r = cur().rounds[k];
+    editIndex = k; draft = { w: r.w, c: [...r.c] };
+    renderAll(); $("entryCard").scrollIntoView({ behavior: "smooth", block: "start" });
+  } else if (b.dataset.del !== undefined){
+    const k = +b.dataset.del;
+    confirmTap(b, "確定?", () => { cur().rounds.splice(k, 1); if (editIndex !== null) resetDraft(); save(); renderAll(); toast("已刪除"); });
+  }
+});
 
+/* ============ 統計 ============ */
+let scope = "cur", scopeGame = null;
+
+// 依時間排序的牌局（含有局數的本場）
+function allGames(){
+  const list = db.games.slice();
+  if (cur().rounds.length && seatsReady()) list.push(cur());
+  return list.sort((a, b) => a.startedAt - b.startedAt);
+}
+const priceOf = g => g === cur() ? db.price : (g.price ?? 0);
+
+function computeStats(games){
+  const S = new Map();
+  const get = id => { if (!S.has(id)) S.set(id, { id, games:0, rounds:0, wins:0, lossRounds:0, lossSum:0, maxWin:null, worst:null, streak:0, best:0, total:0, money:0 }); return S.get(id); };
+  games.forEach(g => {
+    const price = priceOf(g);
+    g.seats.forEach(id => get(id).games++);
+    g.rounds.forEach(r => {
+      const d = deltas(r);
+      g.seats.forEach((id, s) => {
+        const p = get(id); p.rounds++; p.total += d[s]; p.money += d[s] * price;
+        if (s === r.w){ p.wins++; p.streak++; p.best = Math.max(p.best, p.streak); p.maxWin = Math.max(p.maxWin ?? -Infinity, d[s]); }
+        else { p.streak = 0; p.lossRounds++; p.lossSum += -d[s]; p.worst = Math.min(p.worst ?? Infinity, d[s]); }
+      });
+    });
+  });
+  return [...S.values()];
+}
+
+// 走勢資料：單場以「局」為點；全部以「場」為點，沒參加的場次畫虛線
+function trendData(){
+  if (scope === "all"){
+    const games = allGames();
+    const ids = [...new Set(games.flatMap(g => g.seats))];
+    const xLabels = ["起點", ...games.map(g => shortDate(g.startedAt) + (g === cur() ? "（本場）" : ""))];
+    const series = ids.map(id => {
+      let c = 0, m = 0; const vals = [0], money = [0], present = [true];
+      games.forEach(g => {
+        const s = g.seats.indexOf(id);
+        if (s >= 0){ const t = gameTotals(g)[s]; c += t; m += t * priceOf(g); }
+        vals.push(c); money.push(m); present.push(s >= 0);
+      });
+      return { id, vals, money, present };
+    });
+    return { xLabels, series, tipTitle: k => k === 0 ? "起點" : `第 ${k} 場 · ${xLabels[k]}`, unit: "場" };
+  }
+  const g = scope === "cur" ? cur() : db.games.find(x => x.id === scopeGame);
+  if (!g) return { xLabels: [], series: [] };
+  const price = priceOf(g);
+  const xLabels = ["開始", ...g.rounds.map((_, k) => String(k+1))];
+  const series = g.seats.filter(Boolean).map(id => {
+    const s = g.seats.indexOf(id); let c = 0;
+    const vals = [0, ...g.rounds.map(r => (c += deltas(r)[s]))];
+    return { id, vals, money: vals.map(v => v * price), present: vals.map(() => true) };
+  });
+  return { xLabels, series, tipTitle: k => k === 0 ? "開始" : `第 ${k} 局後`, unit: "局" };
+}
+
+function niceStep(range){
+  const raw = range / 4, mag = Math.pow(10, Math.floor(Math.log10(raw || 1)));
+  const n = raw / mag; return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10) * mag;
+}
+
+let chartState = null;
+function renderChart(){
+  const data = trendData(), wrap = $("chartWrap");
+  const n = data.xLabels.length - 1;
+  // 圖例：顏色＋名字＋最新累計
+  const sorted = data.series.slice().sort((a, b) => b.vals[b.vals.length-1] - a.vals[a.vals.length-1]);
+  $("legend").innerHTML = sorted.map(s => `<span><i class="dot" style="background:${colorOf(s.id)}"></i>${esc(nameOf(s.id))}<b class="${cls(s.vals[s.vals.length-1])}">${fmt(s.vals[s.vals.length-1])}</b></span>`).join("");
+  $("tip").style.display = "none";
+  if (n < 1){
+    $("chart").innerHTML = `<div class="empty">${scope === "all" ? "還沒有任何牌局紀錄" : "這場還沒有紀錄"}</div>`;
+    $("legend").innerHTML = ""; chartState = null;
+    $("chartNote").textContent = ""; return;
+  }
+  const W = Math.max(280, wrap.clientWidth || 320), H = 220, L = 40, R = 12, T = 10, B = 26;
+  const all = data.series.flatMap(s => s.vals);
+  let lo = Math.min(0, ...all), hi = Math.max(0, ...all);
+  if (lo === hi){ lo -= 5; hi += 5; }
+  const step = niceStep(hi - lo);
+  lo = Math.floor(lo / step) * step; hi = Math.ceil(hi / step) * step;
+  const x = k => L + (W - L - R) * k / n;
+  const y = v => T + (H - T - B) * (hi - v) / (hi - lo);
+  let svg = `<svg viewBox="0 0 ${W} ${H}" height="${H}" role="img" aria-label="累計輸贏走勢">`;
+  for (let v = lo; v <= hi + 1e-9; v += step){
+    svg += `<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="${v === 0 ? 1.5 : 1}" ${v === 0 ? "" : 'stroke-dasharray="2 3"'}/>`;
+    svg += `<text x="${L-6}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="var(--sub)">${fmt(v)}</text>`;
+  }
+  const xs = Math.max(1, Math.ceil(n / 6));
+  for (let k = 0; k <= n; k += xs)
+    svg += `<text x="${x(k)}" y="${H-8}" text-anchor="${k === 0 ? "start" : "middle"}" font-size="11" fill="var(--sub)">${esc(scope === "all" && k > 0 ? data.xLabels[k].replace("（本場）","") : data.xLabels[k])}</text>`;
+  data.series.forEach(s => {
+    const col = colorOf(s.id);
+    let solid = "", dashed = "";
+    for (let k = 1; k <= n; k++){
+      const seg = `M${x(k-1).toFixed(1)},${y(s.vals[k-1]).toFixed(1)}L${x(k).toFixed(1)},${y(s.vals[k]).toFixed(1)}`;
+      if (s.present[k]) solid += seg; else dashed += seg;
+    }
+    if (dashed) svg += `<path d="${dashed}" fill="none" stroke="${col}" stroke-width="2" stroke-dasharray="4 4" opacity=".55" stroke-linecap="round"/>`;
+    svg += `<path d="${solid}" fill="none" stroke="${col}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+    if (n <= 30) for (let k = 1; k <= n; k++) if (s.present[k] && scope === "all")
+      svg += `<circle cx="${x(k)}" cy="${y(s.vals[k])}" r="3" fill="${col}" stroke="var(--card)" stroke-width="1.5"/>`;
+  });
+  svg += `<line id="xhair" x1="0" x2="0" y1="${T}" y2="${H-B}" stroke="var(--sub)" stroke-width="1" style="display:none"/>`;
+  svg += `<g id="hdots"></g>`;
+  svg += `<rect id="hit" x="${L-10}" y="0" width="${W-L-R+20}" height="${H}" fill="transparent"/>`;
+  svg += `</svg>`;
+  $("chart").innerHTML = svg;
+  chartState = { data, n, x, y, W, H, L, R };
+  $("chartNote").textContent = scope === "all"
+    ? "每個點是一場結束後的累計；虛線表示那場沒參加。點圖可看各場數字。"
+    : "點圖可看每局後的累計。";
+  const hit = $("hit");
+  const onMove = e => {
+    const rect = $("chart").querySelector("svg").getBoundingClientRect();
+    const px = (e.clientX - rect.left) * (W / rect.width);
+    const k = Math.max(0, Math.min(n, Math.round((px - L) / ((W - L - R) / n))));
+    showTip(k);
+  };
+  hit.addEventListener("pointermove", onMove);
+  hit.addEventListener("pointerdown", onMove);
+}
+function showTip(k){
+  const st = chartState; if (!st) return;
+  const { data, x, y, W } = st;
+  const xh = $("xhair"); xh.setAttribute("x1", x(k)); xh.setAttribute("x2", x(k)); xh.style.display = "";
+  $("hdots").innerHTML = data.series.map(s => `<circle cx="${x(k)}" cy="${y(s.vals[k])}" r="5" fill="${colorOf(s.id)}" stroke="var(--card)" stroke-width="2"/>`).join("");
+  const rows = data.series.slice().sort((a, b) => b.vals[k] - a.vals[k]);
+  const anyMoney = rows.some(s => s.money[k] !== 0);
+  const tip = $("tip");
+  tip.innerHTML = `<div class="t">${esc(data.tipTitle(k))}</div>` + rows.map(s =>
+    `<div class="l"><span><i class="dot" style="background:${colorOf(s.id)}"></i>${esc(nameOf(s.id))}${s.present[k] ? "" : '<small style="color:var(--sub)">（缺席）</small>'}</span>
+     <span class="${cls(s.vals[k])}">${fmt(s.vals[k])}${anyMoney ? ` · ${money(s.money[k], 1)}` : ""}</span></div>`).join("");
+  tip.style.display = "block";
+  const wrapW = $("chartWrap").clientWidth, scale = wrapW / W, px = x(k) * scale, tw = tip.offsetWidth;
+  tip.style.left = Math.max(0, Math.min(wrapW - tw, px > wrapW / 2 ? px - tw - 12 : px + 12)) + "px";
+}
+document.addEventListener("pointerdown", e => {
+  if (!e.target.closest || e.target.closest("#chartWrap")) return;
+  $("tip").style.display = "none";
+  const xh = $("xhair"); if (xh) xh.style.display = "none";
+  const hd = $("hdots"); if (hd) hd.innerHTML = "";
+});
+
+function renderStatTable(){
+  let games;
+  if (scope === "all") games = allGames();
+  else if (scope === "cur") games = cur().rounds.length ? [cur()] : [];
+  else games = db.games.filter(g => g.id === scopeGame);
+  const stats = computeStats(games).filter(p => p.rounds > 0);
+  if (!stats.length){ $("statTable").innerHTML = ""; return; }
+  const multi = scope === "all";
+  const showMoney = stats.some(p => p.money !== 0);
+  multi ? stats.sort((a, b) => b.total / b.games - a.total / a.games) : stats.sort((a, b) => b.total - a.total);
+  const pct = (a, b) => b ? Math.round(a / b * 100) + "%" : "—";
+  const head = ["玩家", ...(multi ? ["出場", "場均"] : []), "總計", ...(showMoney ? ["金額"] : []), ...(multi ? ["每局平均"] : []),
+    "勝局", "勝率", "平均被扣", "單局最大贏", "單局最慘", "最長連勝"];
+  const rows = stats.map(p => `<tr>
+    <td><i class="dot" style="background:${colorOf(p.id)}"></i>${esc(nameOf(p.id))}</td>
+    ${multi ? `<td>${p.games} 場</td><td class="${cls(p.total)}"><b>${fmt1(p.total / p.games)}</b></td>` : ""}
+    <td class="${cls(p.total)}">${multi ? fmt(p.total) : `<b>${fmt(p.total)}</b>`}</td>
+    ${showMoney ? `<td class="${cls(p.money)}">${money(p.money, 1)}</td>` : ""}
+    ${multi ? `<td class="${cls(p.total)}">${fmt1(p.total / p.rounds)}</td>` : ""}
+    <td>${p.wins} / ${p.rounds}</td><td>${pct(p.wins, p.rounds)}</td>
+    <td>${p.lossRounds ? (Math.round(p.lossSum / p.lossRounds * 10) / 10) + " 張" : "—"}</td>
+    <td class="pos">${p.maxWin != null ? fmt(p.maxWin) : "—"}</td>
+    <td class="neg">${p.worst != null ? fmt(p.worst) : "—"}</td>
+    <td>${p.best} 局</td></tr>`).join("");
+  $("statTable").innerHTML = `<table class="stat"><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr>${rows}</table>
+    <p class="chartnote">${multi ? "依「場均」排名，避免出場多的人被放大；" : ""}表格可左右滑動。</p>`;
+}
+
+function renderStats(){
+  if (!$("statsBox").open) return;
+  if (scope === "game" && !db.games.find(g => g.id === scopeGame)) scopeGame = db.games.length ? db.games[db.games.length-1].id : null;
+  if (scope === "game" && !scopeGame) scope = "cur";
+  $("scopeSeg").querySelectorAll("button").forEach(b => {
+    b.classList.toggle("on", b.dataset.scope === scope);
+    if (b.dataset.scope === "game") b.disabled = !db.games.length;
+  });
+  const sel = $("gameSel");
+  sel.style.display = scope === "game" ? "block" : "none";
+  if (scope === "game"){
+    sel.innerHTML = db.games.slice().reverse().map(g => `<option value="${g.id}" ${g.id === scopeGame ? "selected" : ""}>${dateStr(g.startedAt)} · ${g.rounds.length} 局 · ${g.seats.map(nameOf).map(esc).join("、")}</option>`).join("");
+  }
+  renderChart(); renderStatTable();
+}
+$("statsBox").addEventListener("toggle", renderStats);
+$("scopeSeg").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b || b.disabled) return;
+  scope = b.dataset.scope;
+  if (scope === "game" && !scopeGame && db.games.length) scopeGame = db.games[db.games.length-1].id;
+  renderStats();
+});
+$("gameSel").addEventListener("change", e => { scopeGame = e.target.value; renderStats(); });
+let rzT; window.addEventListener("resize", () => { clearTimeout(rzT); rzT = setTimeout(renderStats, 150); });
+
+/* ============ 歷史牌局 ============ */
+function renderGames(){
+  $("gamesSum").textContent = `歷史牌局（${db.games.length} 場）`;
+  if (!db.games.length){ $("games").innerHTML = `<div class="empty">還沒有。按「結束本場、開新牌局」後，本場會存到這裡。</div>`; return; }
+  $("games").innerHTML = db.games.map((g, idx) => ({ g, idx })).reverse().map(({ g, idx }) => {
+    const t = gameTotals(g);
+    const order = [0,1,2,3].sort((a, b) => t[b] - t[a]);
+    return `<div class="game"><div class="top"><span class="when">${dateStr(g.startedAt)} · ${g.rounds.length} 局</span>
+      <span class="gb"><button data-view="${g.id}">看統計</button><button data-gdel="${idx}">刪除</button></span></div>
+      <div class="sum">${order.map(i => `${esc(nameOf(g.seats[i]))} <span class="${cls(t[i])}">${fmt(t[i])}</span>`).join(" · ")}${g.price > 0 ? `<br>每張 $${g.price}` : ""}</div></div>`;
+  }).join("");
+}
+$("games").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.view){
+    scope = "game"; scopeGame = b.dataset.view; $("statsBox").open = true; renderStats();
+    $("statsCard").scrollIntoView({ behavior: "smooth", block: "start" });
+  } else if (b.dataset.gdel !== undefined){
+    const idx = +b.dataset.gdel;
+    confirmTap(b, "確定刪?", () => { db.games.splice(idx, 1); save(); renderAll(); toast("已刪除這場"); });
+  }
+});
+
+/* ============ 玩家名單與設定 ============ */
+function usage(id){
+  return db.games.filter(g => g.seats.includes(id)).length + (cur().seats.includes(id) ? 1 : 0);
+}
 function renderSettings(){
-  $("nameInputs").innerHTML = state.players.map((p,i)=>`
-    <div><label>玩家 ${i+1}</label><input data-name="${i}" value="${esc(p)}" maxlength="10"></div>`).join("");
-  $("price").value = state.price;
+  $("people").innerHTML = db.people.length ? db.people.map(p => {
+    const u = usage(p.id);
+    return `<div class="person"><i class="dot" style="background:${colorOf(p.id)}"></i>
+      <input data-pname="${p.id}" value="${esc(p.name)}" maxlength="10">
+      <span class="cnt">${u ? `${u} 場` : "未使用"}</span>
+      ${u ? "" : `<button data-pdel="${p.id}">刪除</button>`}</div>`;
+  }).join("") : `<div class="empty">名單是空的，在上方「選玩家」時就能新增</div>`;
+  const opts = db.people.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join("");
+  $("mergeFrom").innerHTML = `<option value="">併入誰…</option>` + opts;
+  $("mergeTo").innerHTML = `<option value="">保留誰…</option>` + opts;
+  $("price").value = db.price;
 }
-
-function renderEntryHeader(){
-  const card = $("entryCard");
-  if (editIndex!==null){
-    card.classList.add("editing");
-    $("editLabel").textContent = `正在修改第 ${editIndex+1} 局`;
-    $("entryTitle").textContent = `修改第 ${editIndex+1} 局`;
-    $("submit").textContent = "更新這局";
-  } else {
-    card.classList.remove("editing");
-    $("entryTitle").textContent = `第 ${state.rounds.length+1} 局`;
-    $("submit").textContent = "記錄這局";
-  }
-}
-
-function renderAll(){ renderTotals(); renderEntryHeader(); renderEntry(); renderHistory(); }
-
-function toast(t){ const el=$("toast"); el.textContent=t; el.classList.add("show"); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove("show"),1600); }
-function resetDraft(){ draft = { winner:null, cards:[0,0,0,0] }; editIndex = null; }
-
-// —— 事件 ——
-$("entry").addEventListener("click", e=>{
-  const b = e.target.closest("button"); if(!b) return;
-  if (b.dataset.win!==undefined){ draft.winner = +b.dataset.win; draft.cards[draft.winner]=0; renderEntry(); return; }
-  if (b.dataset.inc!==undefined){ const i=+b.dataset.inc; draft.cards[i]=(draft.cards[i]||0)+1; renderEntry(); return; }
-  if (b.dataset.dec!==undefined){ const i=+b.dataset.dec; draft.cards[i]=Math.max(1,(draft.cards[i]||1)-1); renderEntry(); return; }
+$("people").addEventListener("change", e => {
+  const id = e.target.dataset.pname; if (!id) return;
+  const n = e.target.value.trim().slice(0, 10), p = person(id);
+  if (!n){ e.target.value = p.name; return; }
+  if (db.people.some(q => q.id !== id && q.name === n)){ toast(`已經有「${n}」，要併成一人請用合併`); e.target.value = p.name; return; }
+  p.name = n; save(); renderAll(); renderSettings();
 });
-$("entry").addEventListener("input", e=>{
-  const i = e.target.dataset.in; if(i===undefined) return;
-  const v = e.target.value.trim();
-  draft.cards[+i] = v==="" ? 0 : Number(v);
-  // 只更新贏家合計與驗證，避免輸入框失焦
-  let sum=0; for(let k=0;k<4;k++) if(k!==draft.winner) sum+=draft.cards[k]||0;
-  const wn = document.querySelector(".winnote"); if(wn) wn.textContent = `+${sum} 張`;
-  validate();
+$("people").addEventListener("click", e => {
+  const b = e.target.closest("[data-pdel]"); if (!b) return;
+  confirmTap(b, "確定?", () => { db.people = db.people.filter(p => p.id !== b.dataset.pdel); save(); renderSettings(); });
 });
-$("entry").addEventListener("change", ()=>renderEntry());
-
-$("submit").addEventListener("click", ()=>{
-  if ($("submit").disabled) return;
-  const r = { winner:draft.winner, cards:draft.cards.map((n,i)=> i===draft.winner?0:n) };
-  if (editIndex!==null){ state.rounds[editIndex]=r; toast(`第 ${editIndex+1} 局已更新`); }
-  else { state.rounds.push(r); toast(`第 ${state.rounds.length} 局已記錄`); }
-  save(); resetDraft(); pendingConfirm=null; renderAll();
+$("mergeBtn").addEventListener("click", () => {
+  const a = $("mergeFrom").value, b = $("mergeTo").value, msg = $("mergeMsg");
+  msg.classList.remove("ok");
+  if (!a || !b){ msg.textContent = "請選兩位玩家"; return; }
+  if (a === b){ msg.textContent = "請選兩位不同的玩家"; return; }
+  const clash = [...db.games, cur()].find(g => g.seats.includes(a) && g.seats.includes(b));
+  if (clash){ msg.textContent = `兩人曾在同一場（${dateStr(clash.startedAt)}）同桌，不會是同一個人，無法合併`; return; }
+  confirmTap($("mergeBtn"), `確定把「${nameOf(a)}」併入「${nameOf(b)}」？`, () => {
+    [...db.games, cur()].forEach(g => { g.seats = g.seats.map(s => s === a ? b : s); });
+    db.people = db.people.filter(p => p.id !== a);
+    save(); renderAll(); renderSettings();
+    msg.classList.add("ok"); msg.textContent = "已合併";
+  });
 });
-$("cancelEdit").addEventListener("click", ()=>{ resetDraft(); renderAll(); });
-
-$("history").addEventListener("click", e=>{
-  const b = e.target.closest("button"); if(!b) return;
-  if (b.dataset.edit!==undefined){
-    const k=+b.dataset.edit, r=state.rounds[k];
-    editIndex=k; draft={winner:r.winner, cards:[...r.cards]}; pendingConfirm=null;
-    renderAll(); $("entryCard").scrollIntoView({behavior:"smooth",block:"start"}); return;
-  }
-  if (b.dataset.del!==undefined){
-    const k=+b.dataset.del;
-    if (pendingConfirm && pendingConfirm.type==="del" && pendingConfirm.k===k){
-      state.rounds.splice(k,1); pendingConfirm=null;
-      if (editIndex!==null) resetDraft();
-      save(); renderAll(); toast("已刪除");
-    } else { pendingConfirm={type:"del",k}; renderHistory(); setTimeout(()=>{ if(pendingConfirm&&pendingConfirm.k===k){pendingConfirm=null;renderHistory();} },3000); }
-  }
+$("price").addEventListener("input", e => {
+  const v = Number(e.target.value); db.price = isFinite(v) && v >= 0 ? v : 0;
+  save(); renderTotals(); renderStats();
+});
+$("newGameBtn").addEventListener("click", e => {
+  const b = e.currentTarget;
+  confirmTap(b, cur().rounds.length ? "再按一次：存檔並開新牌局" : "再按一次：開新牌局", () => {
+    const had = cur().rounds.length;
+    if (had && seatsReady()) db.games.push({ ...cur(), endedAt: Date.now(), price: db.price });
+    db.current = newGame(cur().seats);
+    resetDraft(); save(); renderAll(); renderSettings();
+    toast(had ? "本場已存到歷史牌局，開始新的一場" : "已開新牌局");
+  });
 });
 
-$("nameInputs").addEventListener("input", e=>{
-  const i=e.target.dataset.name; if(i===undefined) return;
-  state.players[+i] = e.target.value.trim() || `玩家 ${+i+1}`;
-  save(); renderTotals(); renderEntry(); renderHistory();
-});
-$("price").addEventListener("input", e=>{
-  const v = Number(e.target.value); state.price = isFinite(v)&&v>=0 ? v : 0;
-  save(); renderTotals();
-});
-$("resetBtn").addEventListener("click", e=>{
-  const b=e.currentTarget;
-  if (pendingConfirm && pendingConfirm.type==="reset"){
-    state.rounds=[]; pendingConfirm=null; resetDraft(); save(); renderAll();
-    b.textContent="開新牌局（清空所有局數）"; toast("已開新牌局（名稱與金額保留）");
-  } else {
-    pendingConfirm={type:"reset"}; b.textContent="再按一次確認清空";
-    setTimeout(()=>{ if(pendingConfirm&&pendingConfirm.type==="reset"){pendingConfirm=null;b.textContent="開新牌局（清空所有局數）";} },3000);
-  }
-});
-
-$("copyBtn").addEventListener("click", async ()=>{
-  const t = totals();
-  const order = [0,1,2,3].sort((a,b)=>t[b]-t[a]);
-  const lines = [`大老二戰績（共 ${state.rounds.length} 局${state.price>0?`，每張 $${state.price}`:""}）`];
-  order.forEach((i,rank)=> lines.push(`${rank+1}. ${state.players[i]}：${fmt(t[i])} 張${state.price>0?`（${money(t[i])}）`:""}`));
-  const text = lines.join("\n");
-  try { await navigator.clipboard.writeText(text); toast("已複製，可直接貼到 LINE"); }
-  catch(e){ toast("無法複製，請手動截圖"); }
-});
-
-// —— 匯出／匯入 ——
-// 戰績碼用 Base32（只有大寫英文＋數字 2–7），大小寫被改掉也能正確讀取
+/* ============ 匯出／匯入 ============ */
+// 本場戰績碼：Base32（不分大小寫），格式與舊版相容
 const B32 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 function b32enc(bytes){
-  let out="", bits=0, val=0;
-  for (const b of bytes){ val=(val<<8)|b; bits+=8; while(bits>=5){ out+=B32[(val>>>(bits-5))&31]; bits-=5; } }
-  if (bits>0) out+=B32[(val<<(5-bits))&31];
+  let out = "", bits = 0, val = 0;
+  for (const b of bytes){ val = (val << 8) | b; bits += 8; while (bits >= 5){ out += B32[(val >>> (bits - 5)) & 31]; bits -= 5; } }
+  if (bits > 0) out += B32[(val << (5 - bits)) & 31];
   return out;
 }
 function b32dec(str){
-  const out=[]; let bits=0, val=0;
+  const out = []; let bits = 0, val = 0;
   for (const ch of str.toUpperCase()){
-    const k=B32.indexOf(ch); if(k<0) throw new Error("戰績碼含有無效字元，請確認完整複製");
-    val=((val<<5)|k)&0xffff; bits+=5; if(bits>=8){ out.push((val>>>(bits-8))&255); bits-=8; }
+    const k = B32.indexOf(ch); if (k < 0) throw new Error("戰績碼含有無效字元，請確認完整複製");
+    val = ((val << 5) | k) & 0xffff; bits += 5; if (bits >= 8){ out.push((val >>> (bits - 8)) & 255); bits -= 8; }
   }
   return Uint8Array.from(out);
 }
-function encodeState(){
-  const data = { v:1, p:state.players, $:state.price, t:state.updatedAt||0, r:state.rounds.map(r=>[r.winner, ...r.cards]) };
+function encodeCurrent(){
+  const g = cur();
+  const data = { v: 1, p: g.seats.map(nameOf), $: db.price, s: g.startedAt, r: g.rounds.map(r => [r.w, ...r.c]) };
   return "BIG2-" + b32enc(new TextEncoder().encode(JSON.stringify(data)));
 }
-function decodeState(code){
+function decodeCurrent(code){
   code = code.replace(/\s+/g, "");
   let bytes, m;
-  if ((m = code.match(/big2-([a-z2-7]+)/i))) bytes = b32dec(m[1]);          // 新格式，不分大小寫
-  else if ((m = code.match(/big2:([A-Za-z0-9+/=]+)/i))){                     // 舊格式（第一版）
-    const bin = atob(m[1]); bytes = Uint8Array.from(bin, c=>c.charCodeAt(0));
-  } else throw new Error("格式不對，戰績碼應以 BIG2- 開頭");
+  if ((m = code.match(/big2-([a-z2-7]+)/i))) bytes = b32dec(m[1]);
+  else if ((m = code.match(/big2:([A-Za-z0-9+/=]+)/i))){ const bin = atob(m[1]); bytes = Uint8Array.from(bin, c => c.charCodeAt(0)); }
+  else throw new Error("格式不對，戰績碼應以 BIG2- 開頭");
   let data;
-  try { data = JSON.parse(new TextDecoder().decode(bytes)); }
-  catch(e){ throw new Error("戰績碼讀不出來，可能複製不完整或被改動過"); }
-  if (!Array.isArray(data.p) || data.p.length!==4 || !Array.isArray(data.r)) throw new Error("戰績碼內容不完整");
-  const rounds = data.r.map(a=>{
-    if (!Array.isArray(a) || a.length!==5) throw new Error("局數資料有誤");
-    const w = a[0], cards = a.slice(1).map(Number);
-    if (![0,1,2,3].includes(w)) throw new Error("局數資料有誤");
-    cards.forEach((n,k)=>{ if (k!==w && !(Number.isInteger(n) && n>=1)) throw new Error("局數資料有誤"); });
-    cards[w] = 0; return { winner:w, cards };
+  try { data = JSON.parse(new TextDecoder().decode(bytes)); } catch(e){ throw new Error("戰績碼讀不出來，可能複製不完整或被改動過"); }
+  if (!Array.isArray(data.p) || data.p.length !== 4 || !Array.isArray(data.r)) throw new Error("戰績碼內容不完整");
+  const rounds = data.r.map(a => {
+    if (!Array.isArray(a) || a.length !== 5 || ![0,1,2,3].includes(a[0])) throw new Error("局數資料有誤");
+    const w = a[0], c = a.slice(1).map(Number);
+    c.forEach((n, k) => { if (k !== w && !(Number.isInteger(n) && n >= 1)) throw new Error("局數資料有誤"); });
+    c[w] = 0; return { w, c, m: {} };
   });
-  return { players:data.p.map((s,k)=> String(s||"").slice(0,10) || `玩家 ${k+1}`), price: Number(data.$)>=0 ? Number(data.$) : 0, rounds, updatedAt: Number(data.t)||0 };
+  const names = data.p.map((s, k) => String(s || "").trim().slice(0, 10) || `玩家 ${k+1}`);
+  if (new Set(names).size !== 4) throw new Error("戰績碼裡有重複的玩家名字");
+  return { names, price: Number(data.$) >= 0 ? Number(data.$) : 0, startedAt: Number(data.s) || Date.now(), rounds };
 }
 
-$("exportBtn").addEventListener("click", async ()=>{
-  const code = encodeState(), box = $("exportBox");
+$("exportCurBtn").addEventListener("click", async () => {
+  if (!seatsReady()){ toast("本場還沒選好四位玩家"); return; }
+  const code = encodeCurrent(), box = $("exportBox");
   box.value = code; box.style.display = "block";
-  try { await navigator.clipboard.writeText(code); toast(`已複製戰績碼（${state.rounds.length} 局）`); }
+  try { await navigator.clipboard.writeText(code); toast(`已複製本場戰績碼（${cur().rounds.length} 局）`); }
   catch(e){ box.focus(); box.select(); toast("請長按上方戰績碼手動複製"); }
+});
+$("exportAllBtn").addEventListener("click", async () => {
+  const d = new Date(), stamp = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,"0")}${String(d.getDate()).padStart(2,"0")}`;
+  const name = `大老二備份-${stamp}.json`;
+  const text = JSON.stringify({ app: "big2-scorer", exportedAt: Date.now(), db });
+  const file = new File([text], name, { type: "application/json" });
+  try {
+    if (navigator.canShare && navigator.canShare({ files: [file] })){ await navigator.share({ files: [file], title: name }); return; }
+  } catch(e){ if (e && e.name === "AbortError") return; }
+  const a = document.createElement("a"); a.href = URL.createObjectURL(file); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  toast("備份檔已下載");
 });
 
 let pendingImport = null;
-$("importBox").addEventListener("input", ()=>{ pendingImport=null; $("importBtn").textContent="匯入"; $("importMsg").textContent=""; $("importMsg").classList.remove("ok"); });
-$("importBtn").addEventListener("click", ()=>{
-  const msg = $("importMsg");
-  if (pendingImport){
-    state = pendingImport; pendingImport = null; save(); resetDraft(); pendingConfirm=null;
-    renderSettings(); renderAll();
-    $("importBox").value=""; $("importBtn").textContent="匯入"; msg.textContent="";
-    toast(`已匯入 ${state.rounds.length} 局，可以繼續記錄`); return;
-  }
+function armImport(text, action){
+  pendingImport = action;
+  const msg = $("importMsg"); msg.classList.add("ok"); msg.textContent = text;
+  $("importConfirm").style.display = "inline-block";
+}
+function importError(t){
+  pendingImport = null; $("importConfirm").style.display = "none";
+  const msg = $("importMsg"); msg.classList.remove("ok"); msg.textContent = t;
+}
+$("importBox").addEventListener("input", () => importError(""));
+$("importBtn").addEventListener("click", () => {
   try {
-    const s = decodeState($("importBox").value);
-    pendingImport = s;
-    msg.classList.add("ok");
-    msg.textContent = `讀到 ${s.rounds.length} 局：${s.players.join("、")}，每張 $${s.price}。匯入會取代這台目前的 ${state.rounds.length} 局紀錄。`;
-    $("importBtn").textContent = "確認匯入";
-  } catch(e){
-    msg.classList.remove("ok");
-    msg.textContent = e.message && /^[一-鿿]/.test(e.message) ? e.message : "無法讀取，請確認戰績碼完整複製";
-  }
+    const s = decodeCurrent($("importBox").value);
+    armImport(`讀到本場 ${s.rounds.length} 局：${s.names.join("、")}，每張 $${s.price}。匯入會取代這台目前的本場（${cur().rounds.length} 局），歷史牌局不受影響。`, () => {
+      const seats = s.names.map(n => (db.people.find(p => p.name === n) || {}).id || addPerson(db, n));
+      db.current = { id: uid(), startedAt: s.startedAt, seats, rounds: s.rounds };
+      db.price = s.price; $("importBox").value = "";
+      return `已匯入本場 ${s.rounds.length} 局，可以繼續記錄`;
+    });
+  } catch(e){ importError(/^[一-鿿]/.test(e.message || "") ? e.message : "無法讀取，請確認戰績碼完整複製"); }
+});
+$("importFile").addEventListener("change", async e => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  try {
+    const obj = JSON.parse(await f.text());
+    const d = obj && obj.app === "big2-scorer" ? obj.db : null;
+    if (!validDb(d)) throw new Error();
+    armImport(`備份檔內容：玩家 ${d.people.length} 位、歷史牌局 ${d.games.length} 場、本場 ${d.current.rounds.length} 局。匯入會取代這台的全部資料。`, () => {
+      db = d; return "已匯入全部資料";
+    });
+  } catch(err){ importError("這不是大老二計分器的備份檔，或檔案已損毀"); }
+});
+$("importConfirm").addEventListener("click", () => {
+  if (!pendingImport) return;
+  const done = pendingImport(); pendingImport = null;
+  resetDraft(); save(); renderSettings(); renderAll();
+  $("importConfirm").style.display = "none"; $("importMsg").textContent = ""; toast(done);
 });
 
+/* ============ 複製戰績 ============ */
+$("copyBtn").addEventListener("click", async () => {
+  const g = cur();
+  if (!seatsReady()){ toast("本場還沒選好四位玩家"); return; }
+  const t = gameTotals(g), order = [0,1,2,3].sort((a, b) => t[b] - t[a]);
+  const lines = [`大老二戰績 ${dateStr(g.startedAt)}（共 ${g.rounds.length} 局${db.price > 0 ? `，每張 $${db.price}` : ""}）`];
+  order.forEach((i, rank) => lines.push(`${rank+1}. ${nameOf(g.seats[i])}：${fmt(t[i])} 張${db.price > 0 ? `（${money(t[i], db.price)}）` : ""}`));
+  try { await navigator.clipboard.writeText(lines.join("\n")); toast("已複製，可直接貼到 LINE"); }
+  catch(e){ toast("無法複製，請手動截圖"); }
+});
+
+/* ============ 啟動 ============ */
+function renderAll(){ renderTotals(); renderEntry(); renderHistory(); renderGames(); renderStats(); }
 renderSettings(); renderAll();
-// 自架版：資料存在這支手機的瀏覽器（localStorage），並請求瀏覽器長期保留
-try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch(e){}
 </script>
 </body>
 </html>
